@@ -4,10 +4,9 @@ import sys
 import numpy as np
 import time
 from brainflow.board_shim import BoardShim, BrainFlowInputParams, BoardIds
-from brainflow.data_filter import DataFilter, FilterTypes, DetrendOperations
 
-
-def main():
+#Input port_num as string ex. COM3
+def init_board(port_num):
     BoardShim.enable_dev_board_logger()
     logging.basicConfig(level=logging.DEBUG)
 
@@ -33,7 +32,7 @@ def main():
 
     params = BrainFlowInputParams()
     params.ip_port = args.ip_port
-    params.serial_port = args.serial_port
+    params.serial_port = port_num
     params.mac_address = args.mac_address
     params.other_info = args.other_info
     params.serial_number = args.serial_number
@@ -43,29 +42,25 @@ def main():
     params.file = args.file
     params.master_board = args.master_board
 
+    #define board_shim globally
+    global board_shim;
     board_shim = BoardShim(args.board_id, params) #initiate board with params and ID
     board_shim.prepare_session() #need this to prepare streaming session
 
+#Make a class that has arrays for each task
+#Parameters to store subject no. and data type (real vs mi) 
+#Create a constructor that takes subject no. and data type inputs
+#Create an update function that updates the values for a given matrix
+#Create a function that saves all of the data into a single file
+#Function that returns all data
+#include board in this class?
 
-    end = False
-    data = [];
-    while (end == False):
-        in1 = input("Type 'start' to begin data stream, 'stop' to end:\n")
-        if (in1 == 'start'):
-            board_shim.start_stream(45000)
-        if(in1 == 'stop'):
-            board_shim.stop_stream()
-            data = board_shim.get_board_data()
-            end = True
-        if(in1[0:6] == "start "):
-            board_shim.start_stream(45000)           
-            time.sleep(int(in1[6:len(in1)]))
-            board_shim.stop_stream()
-            data = board_shim.get_board_data()
-            end = True
-    # Data output is size 32x(250*s)
-    np.savetxt("out.csv", data, delimiter=", ", fmt='%.3f')
 
-    
-if __name__ == '__main__':
-    main()
+class dataclass():
+    #Create arrays for each task
+    task0 = []
+    task1 = []
+    task2 = []
+    task3 = []
+    task4 = []
+    task5 = []
